@@ -1,0 +1,8 @@
+a.2
+Budget vs Rating is better. 
+How well a movie is rated doesn’t depend on the budget while ratings goes together with WinsNoms. There are many poorly rated movies with 0 or low WinsNoms, while the budget for these movies are well spread.
+Similar ratings will yield similar WinsNoms but not similar budget.
+
+c.
+If the range of data is very large, spread across several orders of magnitude i.e from 10 - 1,000,000 then a log scale would work well.
+If the y variable increases exponentially then a SQRT scale would work well i.e when y = 2^x or something like that.

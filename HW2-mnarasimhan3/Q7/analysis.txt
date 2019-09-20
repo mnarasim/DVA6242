@@ -1,0 +1,40 @@
+Q.7
+1) Ease to develop:
+a. Excel
+b. Tableau
+c. Python
+d. D3
+
+As long as the right data set is available visualization using Excel and Tableau just takes a few minutes. No programming knowledge is required. 
+
+2) Easy to maintain:
+a. D3
+b. Python
+c. Excel
+d. Tableau
+
+Updating the visualizations in D3 and Python is automatic while doing the same in Excel and Tableau is manual. 
+
+3) Usability:
+a. D3
+b. Python
+c. Excel
+d. Tableau
+
+D3 is web based so reaching a wide variety of audience is easy. Excel and Tableau are restricted by the capability of the developer to disseminate to the end users, and would also require them to possess those tools. However, D3 and Python makes it easy to deploy the solutions on the web.
+
+4) Scalability:
+a. Python
+b. D3
+c. Excel
+d. Tableau
+
+Python can handle huge amount of data much better than other tools, so it is easily scalable. Next comes D3, tools like Excel and Tableau have limitations on the amount of data that they can handle.
+
+5) System requirements:
+a.	D3
+b.	Excel
+c.	Tableau
+d.	Python
+D3 can be run on any machine that has browsing capabilities. Excel and Tableau can be easily installed and don’t require specific hardware requirements unlike Python.
+ 

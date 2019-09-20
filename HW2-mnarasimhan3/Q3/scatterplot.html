@@ -1,0 +1,616 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mnarasimhan3</title>
+  <script src= '../lib/d3.v5.min.js'></script>
+  <script src='../lib/d3-scale-chromatic.v1.min.js'></script>
+
+
+
+  <style>
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges
+    }
+
+    /*.point{
+      fill: steelblue;
+      stroke: #000;
+    }*/
+    #legend rect {
+      float: left;
+    }
+    .axis text{
+    font-family: sans-serif;
+    font-size: 10px;
+}
+</style>
+
+</head>
+<body>
+  <script>
+
+
+  var myData1 = []
+  var ratingType = []
+  var myData2 = []
+  var myData3 =[]
+  var margin = {top: 30, right:30, bottom:30, left:30}
+  d3.csv('../Q3/movies.csv')
+        .then (function(data) {
+
+       for(var i=0; i < data.length; i++)
+       {
+         var temp = data[i]
+         var temp2 = Number(temp['Rating'])
+         var temp3 = Number(temp['WinsNoms'])
+         var temp4 = Number(temp['IsGoodRating'])
+         var temp5 = Number(temp['Budget'])
+         var temp6 = Number(temp['Votes'])
+         //myData1.push([parseFloat(temp['Rating']),parseFloat(temp['WinsNoms'])]);
+         myData1.push([temp2,temp3]);
+         ratingType.push(temp4)
+         myData2.push([temp2,temp5])
+         myData3.push([temp2,temp6])
+
+      }
+
+  var width = 700
+  var height = 500
+  var padding = 80
+  var xAxisScale = d3.scaleLinear()
+                    .domain([Math.round(d3.min(myData1,function(d) {return d[0];})),d3.max(myData1,function(d) {return d[0];})])
+                    .range([padding, width - padding *2]);
+
+  var yAxisScale = d3.scaleLinear()
+                    .domain([d3.min(myData1,function(d) {return d[1];}),d3.max(myData1,function(d) {return d[1];})])
+                    .range([height - padding, padding]);
+
+  var xAxis = d3.axisBottom()
+                .scale(xAxisScale)
+                .ticks(15);
+  var yAxis = d3.axisLeft()
+                .scale(yAxisScale)
+                .ticks(10);
+
+  var svg = d3.select('body')
+              .append('svg')
+              .attr('width', width + margin.left + margin.right)
+              .attr('height', height + margin.top + margin.bottom)
+              .attr('transform', 'translate(' + margin.left +',' + margin.top +')');
+  var symbol = {'cross': d3.symbol().type(d3.symbolCross).size(10), 'circle': d3.symbol().type(d3.symbolCircle).size(10)};
+  svg.selectAll('.point')
+
+       .data(myData1)
+       .enter().append('path')
+       .attr('class','point')
+       .attr('d', function(d,i) {if (ratingType[i] == 1) {return symbol.cross(d);} else { return symbol.circle(d);};})
+       .attr('transform', function(d) {return 'translate('+xAxisScale(d[0]) + ',' + yAxisScale(d[1]) + ')';})
+       .attr('stroke', function(d,i) {if (ratingType[i] == 1) {return 'blue';} else {return 'red';};})
+       .attr('fill', 'none');
+
+  svg.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + (height - padding) + ')')
+      .call(xAxis);
+  svg.append('g')
+      .attr('class', 'y axis')
+      .attr('transform', 'translate(' + padding + ',0)')
+      .call(yAxis);
+
+  svg.append('text')
+      .attr('text-anchor' ,'middle')
+      .attr('transform', 'translate(' + (width-padding)/2 + ',' + ((height) - (padding/2.5))+')')
+      .style('font','11px times')
+      .text('Rating')
+
+  svg.append('text')
+      .attr('text-anchor' ,'middle')
+      .attr('transform', 'translate('+ (padding-14)/2 + ',' + height/2 +')rotate(-90)')
+      .style('font', '11px times')
+      .text('Wins+Noms')
+
+  var annotation = svg.append('g')
+  annotation.append('text')
+      .text('Wins+Nominations vs. Rating')
+      .attr('dx', 220)
+      .attr('dy', 30)
+      .attr('fill', 'black')
+      .style('font', '12px times')
+      .attr('font-weight', 'bold')
+   annotation.append('text')
+      .text('Figure 3a-i')
+      .attr('dx', 285)
+      .attr('dy', 498)
+      .attr('fill', 'purple')
+      .style('font', '12px times')
+      .attr('font-weight', 'bold')
+
+var labels = ['Good Rating', 'Bad Rating']
+// add legend
+var legendWidth = 100;
+var legendHeight = 90;
+var legend = svg.append('g')
+      .attr('width', legendWidth)
+      .attr('height', legendHeight);
+var s2 = [d3.symbol().type(d3.symbolCross).size(10),d3.symbol().type(d3.symbolCircle).size(10)]
+
+legend.append('path')
+        .attr('d', s2[0])
+        .attr('fill', 'none')
+        .attr('stroke', 'blue')
+        .attr('transform', 'translate(' + 600 + ',' +40+ ')');
+legend.append('path')
+       .attr('d', s2[1])
+       .attr('fill', 'none')
+       .attr('stroke', 'red')
+       .attr('transform', 'translate(' + 600 + ',' +50+ ')');
+legend.append('text')
+      .attr('x',605)
+      .attr('y', 40)
+      .attr('dominant-baseline', 'central')
+      .style('font', '10px times')
+      .text('Good Rating');
+legend.append('text')
+
+      .attr('x',605)
+      .attr('y', 50)
+     .attr('dominant-baseline', 'central')
+       .style('font', '10px times')
+      .text('Bad Rating');
+        //});
+
+//Next Graph 3a-2
+var width = 700
+var height = 500
+var padding = 80
+var xAxisScale = d3.scaleLinear()
+                  .domain([Math.round(d3.min(myData2,function(d) {return d[0];})),d3.max(myData2,function(d) {return d[0];})])
+                  .range([padding, width - padding *2]);
+
+var yAxisScale = d3.scaleLinear()
+                  .domain([0,d3.max(myData2,function(d) {return d[1];})])
+                  .range([height - padding, padding]);
+
+var xAxis = d3.axisBottom()
+              .scale(xAxisScale)
+              .ticks(15);
+var yAxis = d3.axisLeft()
+              .scale(yAxisScale)
+              .ticks(10);
+
+var svg = d3.select('body')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .attr('transform', 'translate(' + margin.left +',' + margin.top +')');
+var symbol = {'cross': d3.symbol().type(d3.symbolCross).size(10), 'circle': d3.symbol().type(d3.symbolCircle).size(10)};
+svg.selectAll('.point')
+
+     .data(myData2)
+     .enter().append('path')
+     .attr('class','point')
+     .attr('d', function(d,i) {if (ratingType[i] == 1) {return symbol.cross(d);} else { return symbol.circle(d);};})
+     .attr('transform', function(d) {return 'translate('+xAxisScale(d[0]) + ',' + yAxisScale(d[1]) + ')';})
+     .attr('stroke', function(d,i) {if (ratingType[i] == 1) {return 'blue';} else {return 'red';};})
+     .attr('fill', 'none');
+
+svg.append('g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + (height - padding) + ')')
+    .call(xAxis);
+svg.append('g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(' + padding + ',0)')
+    .call(yAxis);
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate(' + (width-padding)/2 + ',' + ((height) - (padding/2.5))+')')
+    .style('font','11px times')
+    .text('Rating')
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate('+ (20)/2 + ',' + height/2 +')rotate(-90)')
+    .style('font', '11px times')
+    .text('Budget')
+
+var annotation = svg.append('g')
+annotation.append('text')
+    .text('Budget vs. Rating')
+    .attr('dx', 250)
+    .attr('dy', 30)
+    .attr('fill', 'black')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+ annotation.append('text')
+    .text('Figure 3a-ii')
+    .attr('dx', 285)
+    .attr('dy', 498)
+    .attr('fill', 'purple')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+
+
+var labels = ['Good Rating', 'Bad Rating']
+// add legend
+var legendWidth = 100;
+var legendHeight = 90;
+var legend = svg.append('g')
+    .attr('width', legendWidth)
+    .attr('height', legendHeight);
+var s2 = [d3.symbol().type(d3.symbolCross).size(10),d3.symbol().type(d3.symbolCircle).size(10)]
+
+legend.append('path')
+      .attr('d', s2[0])
+      .attr('fill', 'none')
+      .attr('stroke', 'blue')
+      .attr('transform', 'translate(' + 600 + ',' +40+ ')');
+legend.append('path')
+     .attr('d', s2[1])
+     .attr('fill', 'none')
+     .attr('stroke', 'red')
+     .attr('transform', 'translate(' + 600 + ',' +50+ ')');
+legend.append('text')
+    .attr('x',605)
+    .attr('y', 40)
+    .attr('dominant-baseline', 'central')
+    .style('font', '10px times')
+    .text('Good Rating');
+legend.append('text')
+
+    .attr('x',605)
+    .attr('y', 50)
+   .attr('dominant-baseline', 'central')
+     .style('font', '10px times')
+    .text('Bad Rating');
+//////////////////////////////////////////////////////////////////////////////////
+////////////////////
+//part b
+var width = 700
+var height = 500
+var padding = 80
+var xAxisScale = d3.scaleLinear()
+                  .domain([Math.round(d3.min(myData3,function(d) {return d[0];})),d3.max(myData3,function(d) {return d[0];})])
+                  .range([padding, width - padding *2]);
+
+var yAxisScale = d3.scaleLinear()
+                  .domain([0,d3.max(myData3,function(d) {return d[1];})])
+                  .range([height - padding, padding]);
+var xyScale = d3.scaleLinear()
+                  .domain([d3.min(myData1,function(d) {return d[1];}),d3.max(myData1,function(d) {return d[1];})])
+                  .range(([1,80]));
+var xAxis = d3.axisBottom()
+              .scale(xAxisScale)
+              .ticks(15);
+var yAxis = d3.axisLeft()
+              .scale(yAxisScale)
+              .ticks(10);
+
+var svg = d3.select('body')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .attr('transform', 'translate(' + margin.left +',' + margin.top +')');
+function size(x){
+
+var xy = myData1[x]
+var sz = xyScale(xy[1])
+var symbol = {'cross': d3.symbol().type(d3.symbolCross).size(sz), 'circle': d3.symbol().type(d3.symbolCircle).size(sz)};
+
+//console.log(xy,sz)
+if (ratingType[x] ==1)
+{
+    return symbol.cross(sz)
+  }
+else {
+  return symbol.circle(sz)
+}
+}
+svg.selectAll('.point')
+
+     .data(myData3)
+     .enter().append('path')
+     .attr('class','point')
+     .attr('d', function(d,i) {if (ratingType[i] == 1) {
+
+       return size(i);} else { return size(i);};})
+     .attr('transform', function(d) {return 'translate('+xAxisScale(d[0]) + ',' + yAxisScale(d[1]) + ')';})
+     .attr('stroke', function(d,i) {if (ratingType[i] == 1) {return 'blue';} else {return 'red';};})
+     .attr('fill', 'none');
+
+svg.append('g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + (height - padding) + ')')
+    .call(xAxis);
+svg.append('g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(' + padding + ',0)')
+    .call(yAxis);
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate(' + (width-padding)/2 + ',' + ((height) - (padding/2.5))+')')
+    .style('font','11px times')
+    .text('Rating')
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate('+ (20)/2 + ',' + height/2 +')rotate(-90)')
+    .style('font', '11px times')
+    .text('Votes')
+
+var annotation = svg.append('g')
+annotation.append('text')
+    .text('Votes vs. Rating sized by Wins+Nominations')
+    .attr('dx', 220)
+    .attr('dy', 30)
+    .attr('fill', 'black')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+ annotation.append('text')
+    .text('Figure 3b')
+    .attr('dx', 285)
+    .attr('dy', 498)
+    .attr('fill', 'purple')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+
+
+var labels = ['Good Rating', 'Bad Rating']
+// add legend
+var legendWidth = 100;
+var legendHeight = 90;
+var legend = svg.append('g')
+    .attr('width', legendWidth)
+    .attr('height', legendHeight);
+var s2 = [d3.symbol().type(d3.symbolCross).size(10),d3.symbol().type(d3.symbolCircle).size(10)]
+
+legend.append('path')
+      .attr('d', s2[0])
+      .attr('fill', 'none')
+      .attr('stroke', 'blue')
+      .attr('transform', 'translate(' + 600 + ',' +40+ ')');
+legend.append('path')
+     .attr('d', s2[1])
+     .attr('fill', 'none')
+     .attr('stroke', 'red')
+     .attr('transform', 'translate(' + 600 + ',' +50+ ')');
+legend.append('text')
+    .attr('x',605)
+    .attr('y', 40)
+    .attr('dominant-baseline', 'central')
+    .style('font', '10px times')
+    .text('Good Rating');
+legend.append('text')
+
+    .attr('x',605)
+    .attr('y', 50)
+   .attr('dominant-baseline', 'central')
+     .style('font', '10px times')
+    .text('Bad Rating');
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+var width = 700
+var height = 500
+var padding = 80
+var xAxisScale = d3.scaleLinear()
+                  .domain([Math.round(d3.min(myData1,function(d) {return d[0];})),d3.max(myData1,function(d) {return d[0];})])
+                  .range([padding, width - padding *2]);
+
+var yAxisScale = d3.scaleSqrt()
+                  .domain([0,d3.max(myData1,function(d) {return d[1];})])
+                  .range([height - padding, padding]);
+
+var xAxis = d3.axisBottom()
+              .scale(xAxisScale)
+              .ticks(15);
+var yAxis = d3.axisLeft()
+              .scale(yAxisScale)
+              .ticks(10);
+
+var svg = d3.select('body')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .attr('transform', 'translate(' + margin.left +',' + margin.top +')');
+var symbol = {'cross': d3.symbol().type(d3.symbolCross).size(10), 'circle': d3.symbol().type(d3.symbolCircle).size(10)};
+svg.selectAll('.point')
+
+     .data(myData1)
+     .enter().append('path')
+     .attr('class','point')
+     .attr('d', function(d,i) {if (ratingType[i] == 1) {return symbol.cross(d);} else { return symbol.circle(d);};})
+     .attr('transform', function(d) {return 'translate('+xAxisScale(d[0]) + ',' + yAxisScale(d[1]) + ')';})
+     .attr('stroke', function(d,i) {if (ratingType[i] == 1) {return 'blue';} else {return 'red';};})
+     .attr('fill', 'none');
+
+svg.append('g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + (height - padding) + ')')
+    .call(xAxis);
+svg.append('g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(' + padding + ',0)')
+    .call(yAxis);
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate(' + (width-padding)/2 + ',' + ((height) - (padding/2.5))+')')
+    .style('font','11px times')
+    .text('Rating')
+
+svg.append('text')
+    .attr('text-anchor' ,'middle')
+    .attr('transform', 'translate('+ (padding-14)/2 + ',' + height/2 +')rotate(-90)')
+    .style('font', '11px times')
+    .text('Wins+Noms')
+
+var annotation = svg.append('g')
+annotation.append('text')
+    .text('Wins+Nominations(square-root-scaled) vs. Rating')
+    .attr('dx', 220)
+    .attr('dy', 30)
+    .attr('fill', 'black')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+ annotation.append('text')
+    .text('Figure 3c-i')
+    .attr('dx', 285)
+    .attr('dy', 498)
+    .attr('fill', 'purple')
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+
+var labels = ['Good Rating', 'Bad Rating']
+// add legend
+var legendWidth = 100;
+var legendHeight = 90;
+var legend = svg.append('g')
+    .attr('width', legendWidth)
+    .attr('height', legendHeight);
+var s2 = [d3.symbol().type(d3.symbolCross).size(10),d3.symbol().type(d3.symbolCircle).size(10)]
+
+legend.append('path')
+      .attr('d', s2[0])
+      .attr('fill', 'none')
+      .attr('stroke', 'blue')
+      .attr('transform', 'translate(' + 600 + ',' +40+ ')');
+legend.append('path')
+     .attr('d', s2[1])
+     .attr('fill', 'none')
+     .attr('stroke', 'red')
+     .attr('transform', 'translate(' + 600 + ',' +50+ ')');
+legend.append('text')
+    .attr('x',605)
+    .attr('y', 40)
+    .attr('dominant-baseline', 'central')
+    .style('font', '10px times')
+    .text('Good Rating');
+legend.append('text')
+
+    .attr('x',605)
+    .attr('y', 50)
+   .attr('dominant-baseline', 'central')
+     .style('font', '10px times')
+    .text('Bad Rating');
+    //////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    var width = 700
+    var height = 500
+    var padding = 80
+    var xAxisScale = d3.scaleLinear()
+                      .domain([Math.round(d3.min(myData1,function(d) {return d[0];})),d3.max(myData1,function(d) {return d[0];})])
+                      .range([padding, width - padding *2]);
+
+    var yAxisScale = d3.scaleLog()
+                      .clamp(true)
+                      .domain([1,d3.max(myData1,function(d) {return d[1];})])
+                      .range([height - padding, padding]);
+
+    var xAxis = d3.axisBottom()
+                  .scale(xAxisScale)
+                  .ticks(15);
+    var yAxis = d3.axisLeft()
+                  .scale(yAxisScale)
+                  .ticks(10,'.1f');
+
+
+    var svg = d3.select('body')
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .attr('transform', 'translate(' + margin.left +',' + margin.top +')');
+    var symbol = {'cross': d3.symbol().type(d3.symbolCross).size(10), 'circle': d3.symbol().type(d3.symbolCircle).size(10)};
+    svg.selectAll('.point')
+
+         .data(myData1)
+         .enter().append('path')
+         .attr('class','point')
+         .attr('d', function(d,i) {if (ratingType[i] == 1) {return symbol.cross(d);} else { return symbol.circle(d);};})
+         .attr('transform', function(d) {return 'translate('+xAxisScale(d[0]) + ',' + yAxisScale(d[1]) + ')';})
+         .attr('stroke', function(d,i) {if (ratingType[i] == 1) {return 'blue';} else {return 'red';};})
+         .attr('fill', 'none');
+
+    svg.append('g')
+        .attr('class', 'x axis')
+        .attr('transform', 'translate(0,' + (height - padding) + ')')
+        .call(xAxis);
+    svg.append('g')
+        .attr('class', 'y axis')
+        .attr('transform', 'translate(' + padding + ',0)')
+        .call(yAxis);
+
+    svg.append('text')
+        .attr('text-anchor' ,'middle')
+        .attr('transform', 'translate(' + (width-padding)/2 + ',' + ((height) - (padding/2.5))+')')
+        .style('font','11px times')
+        .text('Rating')
+
+    svg.append('text')
+        .attr('text-anchor' ,'middle')
+        .attr('transform', 'translate('+ (padding-14)/2 + ',' + height/2 +')rotate(-90)')
+        .style('font', '11px times')
+        .text('Wins+Noms')
+
+    var annotation = svg.append('g')
+    annotation.append('text')
+        .text('Wins+Nominations(log-scaled) vs. Rating')
+        .attr('dx', 220)
+        .attr('dy', 30)
+        .attr('fill', 'black')
+        .style('font', '12px times')
+        .attr('font-weight', 'bold')
+     annotation.append('text')
+        .text('Figure 3c-ii')
+        .attr('dx', 285)
+        .attr('dy', 498)
+        .attr('fill', 'purple')
+        .style('font', '12px times')
+        .attr('font-weight', 'bold')
+
+    var labels = ['Good Rating', 'Bad Rating']
+    // add legend
+    var legendWidth = 100;
+    var legendHeight = 90;
+    var legend = svg.append('g')
+        .attr('width', legendWidth)
+        .attr('height', legendHeight);
+    var s2 = [d3.symbol().type(d3.symbolCross).size(10),d3.symbol().type(d3.symbolCircle).size(10)]
+
+    legend.append('path')
+          .attr('d', s2[0])
+          .attr('fill', 'none')
+          .attr('stroke', 'blue')
+          .attr('transform', 'translate(' + 600 + ',' +40+ ')');
+    legend.append('path')
+         .attr('d', s2[1])
+         .attr('fill', 'none')
+         .attr('stroke', 'red')
+         .attr('transform', 'translate(' + 600 + ',' +50+ ')');
+    legend.append('text')
+        .attr('x',605)
+        .attr('y', 40)
+        .attr('dominant-baseline', 'central')
+        .style('font', '10px times')
+        .text('Good Rating');
+    legend.append('text')
+
+        .attr('x',605)
+        .attr('y', 50)
+       .attr('dominant-baseline', 'central')
+         .style('font', '10px times')
+        .text('Bad Rating');
+    });
+
+  </script
+
+  </body>
+
+
+</html>

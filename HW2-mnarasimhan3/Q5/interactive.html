@@ -1,0 +1,262 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mnarasimhan3</title>
+  <script src = '../lib/d3.v5.min.js'></script>
+  <script src='../lib/d3-scale-chromatic.v1.min.js'></script>
+  <script src='../lib/d3-tip.min.js'></script>
+  <style>
+  .axis path,
+  path {
+      stroke: steelblue;
+      stroke-width: 2;
+      fill: none;
+  }
+  .axisBar path {
+    stroke: none;
+    fill: none;
+  }
+    .axis text{
+    font-family: sans-serif;
+    font-size: 10px;
+  }
+  .label{
+    font-size: 10px;
+  }
+
+  .d3-tip {
+  line-height: 1;
+  padding: 6px;
+  background: white;
+  border-radius: 4px solid black;
+  font-size: 10px;
+}
+
+  </style>
+
+</head>
+<body>
+<script>
+
+  var myData = [{country: 'Bangladesh', population_2012: 105905297, growth: {year_2013:42488 , year_2014:934 , year_2015:52633 , year_2016:112822 , year_2017:160792}},
+          {country: 'Ethopia', population_2012: 75656319, growth: {year_2013:1606010 , year_2014:1606705 , year_2015:1600666 , year_2016:1590077 , year_2017:1580805}},
+          {country: 'Kenya', population_2012: 33007327, growth: {year_2013:705153 , year_2014:703994 , year_2015:699906 , year_2016:694295 , year_2017:687910}},
+          {country: 'Afghanistan', population_2012: 23280573, growth: {year_2013:717151 , year_2014:706082 , year_2015:665025 , year_2016:616262 , year_2017:573643}},
+          {country: 'Morocco', population_2012: 13619520, growth: {year_2013:11862 , year_2014:7997 , year_2015:391 , year_2016:-8820 , year_2017:-17029}}]
+
+
+
+
+  var country_names = []
+  var starting_population=[]
+  var ending_population =[]
+
+  var gRates = []
+  for(var key in myData)
+  {
+  	var value = myData[key]
+      country_names.push(value.country)
+      starting_population.push(value.population_2012)
+      var temp = value.growth
+      var growth_sum=value.population_2012
+
+      for (var key2 in temp)
+      {
+         datum = value.country;
+
+        if (!gRates[datum]){
+          gRates[datum] = [];
+        }
+        gRates.push({key:datum, value:temp[key2]*100/growth_sum});
+
+      	growth_sum = growth_sum + temp[key2]
+
+      } ending_population.push(growth_sum)
+
+  }
+
+
+  var newData = {}
+  var barData=[]
+  var data=[]
+  var names=[]
+
+  for(var i=0; i<5;i++)
+  {
+  newData[i]= {country:country_names[i], starting_population: starting_population[i],ending_population: ending_population[i]}
+
+  data.push({key:country_names[i],value:ending_population[i]})
+  }
+
+
+  var margin = {top: 20, right: 20, bottom: 30, left: 100};
+  var width = 960 - margin.left - margin.right;
+  var height = 500 - margin.top - margin.bottom;
+
+
+data = data.sort(function(a,b) { return d3.ascending(a.value, b.value);})
+
+var xScale = d3.scaleLinear()
+                    .domain([0,d3.max(data, function(d) {return d.value;})])
+                    .range([0, width]);
+var yScale = d3.scaleBand()
+                .domain(data.map(function (d) { return d.key;}))
+                .range([height,0])
+                .padding(0.5);
+var color = d3.scaleLinear()
+              .domain([0,d3.max(data, function(d) {return d.value;})])
+              .range(['#E6E6FA', '#1E90FF'])
+var svg = d3.select('body')
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate('+ margin.left +','+ margin.top + ')');
+//Add the chart as tool-tip:
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+var tool_tip = d3.tip()
+                .attr('class','d3-tip')
+                .offset([0,350])
+                .html("<p></p> <div id ='lChart'></div>");
+svg.call(tool_tip);
+
+var m = {top: 50, right:0, bottom:70,left:70}
+w = 300 - m.left - m.right
+h = 280 - m.top - m.bottom
+var lineData=[]
+var years = [2013,2014,2015,2016,2017]
+var xSc = d3.scaleTime()
+          //.domain([d3.min(lineData,function(d) {return d.date;}),d3.max(lineData,function(d) {return d.date;})])
+          .range([0,w]);
+var ySc = d3.scaleLinear()
+          //.domain([d3.min(lineData,function(d){return d.val;}),d3.max(lineData,function(d){return d.val;})])
+          .range([h,0]);
+var xAx = d3.axisBottom()
+            .scale(xSc);
+var yAx = d3.axisLeft()
+            .scale(ySc);
+var line = d3.line()
+
+              .x(function(d) {return xSc(d.date);})
+              .y(function(d) {return ySc(d.val);});
+var parseDate=d3.timeParse("%Y");
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+data.forEach(function(d,i){
+    d.value = +d.value;
+});
+var formatComma = d3.format(",")
+var bars = svg.selectAll('.bar')
+              .data(data)
+              .enter()
+              .append('g')
+              bars.append('rect')
+              .attr('class', 'bar')
+              .attr('width', function(d) {return xScale(d.value);})
+              .attr('height', yScale.bandwidth())
+              .attr('x',0)
+              .attr('y',function(d) { return yScale(d.key);})
+              .attr('fill', function(d,i) { return color(d.value);})
+              .on('mouseover', function(d){
+                tool_tip.show(d);
+
+                d3.select(this).attr('fill', function(d) {
+                    var t = [];
+                    for (var i=0; i<25;i++)
+                    if (d.key == gRates[i].key)
+                      {
+                        t.push(gRates[i].value)
+
+                      }
+                        for (var i=0; i<5;i++)
+                        {   var t1 = t[i]
+                            var y1 = years[i]
+                            lineData.push([y1,t1]);
+                        }
+                        lineData.forEach(function(d,i){
+                            var ds = d[0]
+                            d.date = parseDate(ds);
+                            d.val = +d[1];
+                        });
+
+                            xSc.domain([d3.min(lineData,function(d) {return d.date;}),d3.max(lineData,function(d) {return d.date;})])
+
+                            ySc.domain([d3.min(lineData,function(d){return d.val;}),d3.max(lineData,function(d){return d.val;})])
+                    return 'green';})
+                var tipSVG = d3.select('#lChart')
+                                .append('svg')
+                                .attr('width', w+m.left + m.right)
+                                .attr('height', h + m.top + m.bottom)
+                                .append('g')
+
+                                .attr('transform','translate('+ m.left +',' + m.top +')');
+                tipSVG.append('path')
+                                .datum(lineData)
+                                .attr('class','line')
+                                .attr('d',line)
+                                .style({"stroke":"steelblue", "stroke-width":"1.5px", "fill":"none"});
+                tipSVG.append("g")
+                            .attr("class", "x axis")
+                            .attr("transform", "translate(0," + h + ")")
+                            .style("text-anchor", "end")
+                            .style('font', '10px times')
+                            .attr("dx", "-.8em")
+                            .attr("dy", ".15em")
+                           .call(d3.axisBottom(xSc).ticks(5).tickFormat(d3.timeFormat('%Y'))); // Create an axis component with d3.axisBottom
+                tipSVG.append("g")
+                          .attr("class", "y axis")
+                            .call(d3.axisLeft(ySc).ticks(7)); // Create an axis component with d3.axisLeft
+                var annotation = tipSVG.append('g')
+                            annotation.append('text')
+                                       .text('Year')
+                                       .attr('dx', 100)
+                                       .attr('dy', 195)
+                                       .attr('fill', 'black')
+                                       .style('font', '12px times')
+                                       .attr('font-weight', 'bold');
+                            annotation.append('text')
+                                       .attr('text-anchor' ,'middle')
+                                        .attr('transform', 'translate('+ 0 + ',' + -10 +')')
+                                        .style('font', '12px times')
+                                        .attr('font-weight', 'bold')
+                                        .text('Pct %');
+              })
+
+              .on('mouseout', function(d){
+                 var curr = d3.select(this)
+
+                 lineData=[]
+                tool_tip.style('opacity',0  )
+                d3.select(this).attr('fill', function(curr) { return color(curr.value);})});
+
+
+var yAxis = d3.axisLeft()
+    .scale(yScale)
+
+    .tickSize(0);
+
+
+svg.append("g")
+    .attr('class', 'axisBar')
+    .style('font', '14px times')
+    .attr('font-weight','bold')
+    .call(yAxis);
+bars.append('text')
+
+    .attr('class','label')
+    .attr('y', function(d) { return (yScale(d.key) + yScale.bandwidth()/2 + 4);})
+    .attr('x', function(d) { xScale(d.value)+3;})
+    .attr('fill', 'black')
+
+    .style('font', '12px times')
+    .attr('font-weight', 'bold')
+    .text(function(d) { return formatComma(d.value);});
+
+
+
+
+</script>
+</body>
+</html>
+
+</html>
