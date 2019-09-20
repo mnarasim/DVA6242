@@ -1,0 +1,11 @@
+Q1.2
+
+c. 
+Fruchterman Reingold algorithm to make the graph symmetrical
+Nooverlap algorithm to eliminate node overlapping
+Expansion and Contraction algorithms as needed
+Ran statistical tests:
+Node color – based on Modularity class
+Node size – based on in-degree ranking
+Label size – based on node size, uniform label text color
+Edge colors based on weights(ranking)

@@ -1,0 +1,124 @@
+<html>
+<head>
+  <title>mnarasimhan3</title>
+  <script src= "d3/d3.v3.min.js"></script>
+  <style type='text/css'>
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges
+    }
+    .axis text{
+    font-family: sans-serif;
+    font-size: 11px;
+}
+</style>
+
+</head>
+<body>
+  <script>
+
+  var myData = []
+  var numDataPoints = 100
+  var minData = 10
+  var maxData = 250
+  var width = 550
+  var height = 350
+  var padding = 50
+  var xAverage = 0.0
+  var yAverage = 0.0
+  var sumX=0.0
+  var sumY =0.0
+  var xCoord=0
+  var yCoord=0
+  for (var i =0; i < numDataPoints;i++){
+    var x = Math.floor(Math.random()*(maxData-minData+1))+minData;
+    var y = Math.floor(Math.random()*(maxData-minData+1))+minData;
+    myData.push([x,y]);
+
+  }
+  console.log(myData[0])
+  var lowest = 1000
+  for (var i =0; i < numDataPoints; i++){
+    var item = myData[i]
+    sumX = sumX + item[0]
+    sumY = sumY + item[1]
+    if (item[1] < lowest)
+    {
+        lowest = item[1];
+        yCoord = item[1];
+        xCoord = item[0];
+    }
+
+}
+  xAverage = sumX/numDataPoints
+  yAverage = sumY/numDataPoints
+
+
+
+  var xyScale = d3.scale.linear()
+                  .domain([d3.min(myData,function(d) {return d[0];}),d3.max(myData,function(d) {return d[1];})])
+                  .range(([1,5]));
+
+  var xAxisScale = d3.scale.linear()
+                    .domain([0,d3.max(myData,function(d) {return d[0];})])
+                    .range([padding, width - padding *2]);
+
+  var yAxisScale = d3.scale.linear()
+                    .domain([0,d3.max(myData,function(d) {return d[1];})])
+                    .range([height - padding, padding]);
+
+  var xAxis = d3.svg.axis()
+                .scale(xAxisScale)
+                .orient('bottom')
+                .ticks(10);
+  var yAxis = d3.svg.axis()
+                .scale(yAxisScale)
+                .orient('left')
+                .ticks(10);
+
+  var svg = d3.select('body')
+              .append('svg')
+              .attr('width', width)
+              .attr('height', height)
+
+  svg.selectAll('circle')
+       .data(myData)
+       .enter()
+       .append('circle')
+       .attr('cx', function(d) {return xAxisScale(d[0]);})
+       .attr('cy', function(d) { return yAxisScale(d[1]);})
+       .attr('r', function(d){ return Math.sqrt(Math.pow(xyScale(d[0]),2)+Math.pow(xyScale(d[1]),2));})
+       .attr('stroke', function(d) {if (xAxisScale(d[0]) > xAxisScale(xAverage)) {return 'blue';} else {return 'green';};})
+       .attr('fill', 'transparent')
+
+
+  var annotation = svg.append('g')
+  annotation.append('text')
+            .text('Y Min = ' + lowest)
+            .attr('dx', xAxisScale(xCoord))
+            .attr('dy', yAxisScale(yCoord))
+            .attr('fill', 'purple')
+            .attr('font-weight', 'bold')
+  annotation.append('text')
+            .text('mnarasimhan3')
+            .attr('dx',xAxisScale(120))
+            .attr('dy',yAxisScale(260))
+            .attr('fill', 'red')
+
+
+  svg.append('g')
+      .attr('class', 'axis')
+      .attr('transform', 'translate(0,' + (height - padding) + ')')
+      .call(xAxis);
+  svg.append('g')
+      .attr('class', 'axis')
+      .attr('transform', 'translate(' + padding + ',0)')
+      .call(yAxis);
+  </script
+
+  </body>
+
+
+</html>

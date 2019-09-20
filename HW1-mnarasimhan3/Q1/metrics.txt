@@ -1,0 +1,15 @@
+Q1.2 
+
+d. 
+
+Average degree - 1.651
+For a node degree is the number of its connections. Average degree for a graph is the sum of all degrees divided by the number of nodes.
+
+In our case, it means that on an average every node has about 1.651 connections.
+
+Network Diameter - 10
+This gives us the maximum number of hops that must be made to go from one node to another. In our case, it means that we can reach any node from any other node in less than or equal to 10 steps.
+
+Average Path Length - 3.093
+This gives the average of all the shortest paths that exist between any two pairs of nodes in the graph.	
+In our case, it means that it takes 3.093 steps to reach one node from another node.

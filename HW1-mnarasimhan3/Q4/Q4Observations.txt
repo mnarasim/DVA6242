@@ -1,0 +1,15 @@
+
+
+c
+
+i.a 47 rows are blank
+
+i.b In total there are 5 columns - 4 new columns are created plus the initial column.
+
+ii. Metaphone3 gives 566 clusters
+
+iii. if(isNull(cells['brand_name'].value),'Unbranded',cells['brand_name'].value)
+
+iv. if(toNumber(cells['price'].value) > 100, 1,0)
+
+v. if(or(contains(cells['item_description'].value,'discount'),contains(cells['item_description'].value,'offer'),contains(cells['item_description'].value,'sale')),1,0)
